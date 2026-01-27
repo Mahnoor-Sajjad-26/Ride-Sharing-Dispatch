@@ -4,13 +4,16 @@
 #include <string>
 using namespace std;
 
-enum TripState {
-    TRIP_REQUESTED,
-    TRIP_ASSIGNED,
-    TRIP_ONGOING,
-    TRIP_COMPLETED,
-    TRIP_CANCELLED
-};
+// Trip State Constants (instead of enum)
+const int TRIP_REQUESTED = 0;
+const int TRIP_ASSIGNED = 1;
+const int TRIP_ONGOING = 2;
+const int TRIP_COMPLETED = 3;
+const int TRIP_CANCELLED = 4;
+const int TRIP_STATE_COUNT = 5;
+
+// Lookup array for state names (declared in Trip.cpp)
+extern const string TRIP_STATE_NAMES[];
 
 class Trip {
 private:
@@ -19,7 +22,7 @@ private:
     int driverId;
     int pickupLocationId;
     int dropoffLocationId;
-    TripState state;
+    int state;  // Using int instead of enum
     int distance;
 
 public:
@@ -32,17 +35,17 @@ public:
     int getDriverId() const;
     int getPickupLocationId() const;
     int getDropoffLocationId() const;
-    TripState getState() const;
+    int getState() const;  // Returns int instead of enum
     int getDistance() const;
 
     // Setters (for rollback)
     void setDriverId(int id);
-    void setState(TripState newState);
+    void setState(int newState);  // Takes int instead of enum
     void setDistance(int dist);
 
     // State machine operations
-    bool canTransitionTo(TripState newState) const;
-    bool transitionTo(TripState newState);
+    bool canTransitionTo(int newState) const;  // Takes int instead of enum
+    bool transitionTo(int newState);
 
     // Assign driver
     bool assignDriver(int driverId);

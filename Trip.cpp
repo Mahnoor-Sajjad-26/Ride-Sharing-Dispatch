@@ -2,6 +2,15 @@
 #include <iostream>
 using namespace std;
 
+// Lookup array for state names
+const string TRIP_STATE_NAMES[] = {
+    "Requested",   // 0 = TRIP_REQUESTED
+    "Assigned",    // 1 = TRIP_ASSIGNED
+    "Ongoing",     // 2 = TRIP_ONGOING
+    "Completed",   // 3 = TRIP_COMPLETED
+    "Cancelled"    // 4 = TRIP_CANCELLED
+};
+
 Trip::Trip()
     : id(-1), riderId(-1), driverId(-1), pickupLocationId(-1),
       dropoffLocationId(-1), state(TRIP_REQUESTED), distance(0) {}
@@ -30,7 +39,7 @@ int Trip::getDropoffLocationId() const {
     return dropoffLocationId;
 }
 
-TripState Trip::getState() const {
+int Trip::getState() const {
     return state;
 }
 
@@ -42,7 +51,7 @@ void Trip::setDriverId(int id) {
     driverId = id;
 }
 
-void Trip::setState(TripState newState) {
+void Trip::setState(int newState) {
     state = newState;
 }
 
@@ -50,8 +59,8 @@ void Trip::setDistance(int dist) {
     distance = dist;
 }
 
-bool Trip::canTransitionTo(TripState newState) const {
-    // State machine validation
+bool Trip::canTransitionTo(int newState) const {
+    // State machine validation using if-else (no switch on enum)
     // Valid transitions:
     // REQUESTED -> ASSIGNED, CANCELLED
     // ASSIGNED -> ONGOING, CANCELLED
@@ -59,26 +68,23 @@ bool Trip::canTransitionTo(TripState newState) const {
     // COMPLETED -> (terminal)
     // CANCELLED -> (terminal)
 
-    switch (state) {
-        case TRIP_REQUESTED:
-            return (newState == TRIP_ASSIGNED || newState == TRIP_CANCELLED);
-
-        case TRIP_ASSIGNED:
-            return (newState == TRIP_ONGOING || newState == TRIP_CANCELLED);
-
-        case TRIP_ONGOING:
-            return (newState == TRIP_COMPLETED);
-
-        case TRIP_COMPLETED:
-        case TRIP_CANCELLED:
-            return false; // Terminal states
-
-        default:
-            return false;
+    if (state == TRIP_REQUESTED) {
+        return (newState == TRIP_ASSIGNED || newState == TRIP_CANCELLED);
     }
+    else if (state == TRIP_ASSIGNED) {
+        return (newState == TRIP_ONGOING || newState == TRIP_CANCELLED);
+    }
+    else if (state == TRIP_ONGOING) {
+        return (newState == TRIP_COMPLETED);
+    }
+    else if (state == TRIP_COMPLETED || state == TRIP_CANCELLED) {
+        return false; // Terminal states
+    }
+
+    return false;
 }
 
-bool Trip::transitionTo(TripState newState) {
+bool Trip::transitionTo(int newState) {
     if (canTransitionTo(newState)) {
         state = newState;
         return true;
@@ -95,14 +101,11 @@ bool Trip::assignDriver(int driver) {
 }
 
 string Trip::getStateString() const {
-    switch (state) {
-        case TRIP_REQUESTED: return "Requested";
-        case TRIP_ASSIGNED: return "Assigned";
-        case TRIP_ONGOING: return "Ongoing";
-        case TRIP_COMPLETED: return "Completed";
-        case TRIP_CANCELLED: return "Cancelled";
-        default: return "Unknown";
+    // Use lookup array instead of switch
+    if (state >= 0 && state < TRIP_STATE_COUNT) {
+        return TRIP_STATE_NAMES[state];
     }
+    return "Unknown";
 }
 
 bool Trip::isActive() const {
