@@ -91,18 +91,33 @@ int getDistance(int source, int destination) {
 
 ### Implementation
 
+**State Representation**: Using **integer constants + lookup array** instead of enum:
+
 ```cpp
-bool Trip::canTransitionTo(TripState newState) {
-    switch (state) {
-        case TRIP_REQUESTED:
-            return (newState == TRIP_ASSIGNED || newState == TRIP_CANCELLED);
-        case TRIP_ASSIGNED:
-            return (newState == TRIP_ONGOING || newState == TRIP_CANCELLED);
-        case TRIP_ONGOING:
-            return (newState == TRIP_COMPLETED);
-        default:
-            return false; // Terminal states
-    }
+// Integer constants for states
+const int TRIP_REQUESTED = 0;
+const int TRIP_ASSIGNED = 1;
+const int TRIP_ONGOING = 2;
+const int TRIP_COMPLETED = 3;
+const int TRIP_CANCELLED = 4;
+
+// Lookup array for state names
+const string TRIP_STATE_NAMES[] = {"Requested", "Assigned", "Ongoing", "Completed", "Cancelled"};
+
+// State validation using if-else
+bool Trip::canTransitionTo(int newState) {
+    if (state == TRIP_REQUESTED)
+        return (newState == TRIP_ASSIGNED || newState == TRIP_CANCELLED);
+    else if (state == TRIP_ASSIGNED)
+        return (newState == TRIP_ONGOING || newState == TRIP_CANCELLED);
+    else if (state == TRIP_ONGOING)
+        return (newState == TRIP_COMPLETED);
+    return false; // Terminal states
+}
+
+// Get state name using lookup array - O(1)
+string Trip::getStateString() {
+    return TRIP_STATE_NAMES[state];
 }
 ```
 
@@ -118,15 +133,27 @@ Each operation is recorded as an `Operation` struct containing all data needed t
 
 ### Operation Stack
 
+**Operation Types**: Using integer constants + lookup array:
+
 ```cpp
+// Integer constants for operation types
+const int OP_TRIP_CREATED = 0;
+const int OP_TRIP_ASSIGNED = 1;
+const int OP_TRIP_STARTED = 2;
+const int OP_TRIP_COMPLETED = 3;
+const int OP_TRIP_CANCELLED = 4;
+
+// Lookup array for operation names
+const string OP_TYPE_NAMES[] = {"CREATED", "ASSIGNED", "STARTED", "COMPLETED", "CANCELLED"};
+
 struct Operation {
-    OperationType type;      // What happened
+    int type;                // What happened (int instead of enum)
     int tripId;              // Which trip
     int driverId;            // Which driver
 
-    // Snapshot of previous state
-    TripState previousTripState;
-    DriverStatus previousDriverStatus;
+    // Snapshot of previous state (int instead of enum)
+    int previousTripState;
+    int previousDriverStatus;
     int previousDriverLocation;
     int previousDriverTripsCompleted;
     int previousDriverDistanceCovered;
@@ -234,7 +261,31 @@ Where:
 | Adjacency list | Linked list | Efficient for sparse graphs |
 | Drivers/Riders/Trips | Dynamic arrays | Sequential storage, fast access |
 | Operation history | Stack (array-based) | LIFO for undo operations |
-| State machine | Enum + validation | Type-safe transitions |
+| State representation | Integer constants + Lookup array | O(1) name lookup, no enum dependency |
+
+### Why Integer Constants + Lookup Array?
+
+Instead of using `enum`, we use:
+1. **Integer constants** (`const int`) for state values
+2. **Lookup arrays** (`string[]`) for converting states to names
+
+```cpp
+// Constants
+const int TRIP_REQUESTED = 0;
+const int DRIVER_AVAILABLE = 0;
+const int OP_TRIP_CREATED = 0;
+
+// Lookup arrays
+const string TRIP_STATE_NAMES[] = {"Requested", "Assigned", ...};
+const string DRIVER_STATUS_NAMES[] = {"Available", "Busy", "Offline"};
+const string OP_TYPE_NAMES[] = {"CREATED", "ASSIGNED", ...};
+```
+
+**Benefits**:
+- Shows understanding of how enums work internally (they're just integers)
+- O(1) lookup for name conversion via array indexing
+- More explicit control over state representation
+- Better for demonstrating DSA concepts
 
 ---
 
