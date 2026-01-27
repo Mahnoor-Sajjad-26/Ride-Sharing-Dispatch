@@ -289,62 +289,57 @@ bool RideShareSystem::rollback(int k) {
         Trip* trip = findTrip(op.tripId);
         Driver* driver = findDriver(op.driverId);
 
-        switch (op.type) {
-            case OP_TRIP_CREATED:
-                // Remove the trip (mark as invalid)
-                if (trip) {
-                    // We can't truly delete from array, so we decrement count
-                    // This works because we add sequentially
-                    if (op.tripId == tripCount - 1) {
-                        tripCount--;
-                    }
+        // Using if-else instead of switch (no enum)
+        if (op.type == OP_TRIP_CREATED) {
+            // Remove the trip (mark as invalid)
+            if (trip) {
+                // We can't truly delete from array, so we decrement count
+                // This works because we add sequentially
+                if (op.tripId == tripCount - 1) {
+                    tripCount--;
                 }
-                cout << "Rolled back: Trip " << op.tripId << " creation." << endl;
-                break;
-
-            case OP_TRIP_ASSIGNED:
-                if (trip) {
-                    trip->setState(op.previousTripState);
-                    trip->setDriverId(-1);
-                }
-                if (driver) {
-                    driver->setStatus(op.previousDriverStatus);
-                }
-                cout << "Rolled back: Trip " << op.tripId << " assignment." << endl;
-                break;
-
-            case OP_TRIP_STARTED:
-                if (trip) {
-                    trip->setState(op.previousTripState);
-                }
-                if (driver) {
-                    driver->setCurrentLocationId(op.previousDriverLocation);
-                }
-                cout << "Rolled back: Trip " << op.tripId << " start." << endl;
-                break;
-
-            case OP_TRIP_COMPLETED:
-                if (trip) {
-                    trip->setState(op.previousTripState);
-                }
-                if (driver) {
-                    driver->setStatus(op.previousDriverStatus);
-                    driver->setCurrentLocationId(op.previousDriverLocation);
-                    driver->setTotalTripsCompleted(op.previousDriverTripsCompleted);
-                    driver->setTotalDistanceCovered(op.previousDriverDistanceCovered);
-                }
-                cout << "Rolled back: Trip " << op.tripId << " completion." << endl;
-                break;
-
-            case OP_TRIP_CANCELLED:
-                if (trip) {
-                    trip->setState(op.previousTripState);
-                }
-                if (driver) {
-                    driver->setStatus(op.previousDriverStatus);
-                }
-                cout << "Rolled back: Trip " << op.tripId << " cancellation." << endl;
-                break;
+            }
+            cout << "Rolled back: Trip " << op.tripId << " creation." << endl;
+        }
+        else if (op.type == OP_TRIP_ASSIGNED) {
+            if (trip) {
+                trip->setState(op.previousTripState);
+                trip->setDriverId(-1);
+            }
+            if (driver) {
+                driver->setStatus(op.previousDriverStatus);
+            }
+            cout << "Rolled back: Trip " << op.tripId << " assignment." << endl;
+        }
+        else if (op.type == OP_TRIP_STARTED) {
+            if (trip) {
+                trip->setState(op.previousTripState);
+            }
+            if (driver) {
+                driver->setCurrentLocationId(op.previousDriverLocation);
+            }
+            cout << "Rolled back: Trip " << op.tripId << " start." << endl;
+        }
+        else if (op.type == OP_TRIP_COMPLETED) {
+            if (trip) {
+                trip->setState(op.previousTripState);
+            }
+            if (driver) {
+                driver->setStatus(op.previousDriverStatus);
+                driver->setCurrentLocationId(op.previousDriverLocation);
+                driver->setTotalTripsCompleted(op.previousDriverTripsCompleted);
+                driver->setTotalDistanceCovered(op.previousDriverDistanceCovered);
+            }
+            cout << "Rolled back: Trip " << op.tripId << " completion." << endl;
+        }
+        else if (op.type == OP_TRIP_CANCELLED) {
+            if (trip) {
+                trip->setState(op.previousTripState);
+            }
+            if (driver) {
+                driver->setStatus(op.previousDriverStatus);
+            }
+            cout << "Rolled back: Trip " << op.tripId << " cancellation." << endl;
         }
         rolledBack++;
     }

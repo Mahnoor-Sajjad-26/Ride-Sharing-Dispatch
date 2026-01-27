@@ -4,30 +4,33 @@
 #include "Trip.h"
 #include "Driver.h"
 
-enum OperationType {
-    OP_TRIP_CREATED,
-    OP_TRIP_ASSIGNED,
-    OP_TRIP_STARTED,
-    OP_TRIP_COMPLETED,
-    OP_TRIP_CANCELLED
-};
+// Operation Type Constants (instead of enum)
+const int OP_TRIP_CREATED = 0;
+const int OP_TRIP_ASSIGNED = 1;
+const int OP_TRIP_STARTED = 2;
+const int OP_TRIP_COMPLETED = 3;
+const int OP_TRIP_CANCELLED = 4;
+const int OP_TYPE_COUNT = 5;
+
+// Lookup array for operation names (declared in RollbackManager.cpp)
+extern const string OP_TYPE_NAMES[];
 
 // Stores all information needed to rollback an operation
 struct Operation {
-    OperationType type;
+    int type;  // Using int instead of enum
     int tripId;
     int driverId;
 
-    // Previous state for rollback
-    TripState previousTripState;
-    DriverStatus previousDriverStatus;
+    // Previous state for rollback (using int instead of enum)
+    int previousTripState;
+    int previousDriverStatus;
     int previousDriverLocation;
     int previousDriverTripsCompleted;
     int previousDriverDistanceCovered;
     int tripDistance;
 
     Operation();
-    Operation(OperationType type, int tripId, int driverId);
+    Operation(int type, int tripId, int driverId);
 };
 
 class RollbackManager {

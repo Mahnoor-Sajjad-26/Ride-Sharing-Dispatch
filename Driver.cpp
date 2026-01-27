@@ -2,6 +2,13 @@
 #include <iostream>
 using namespace std;
 
+// Lookup array for status names
+const string DRIVER_STATUS_NAMES[] = {
+    "Available",  // 0 = DRIVER_AVAILABLE
+    "Busy",       // 1 = DRIVER_BUSY
+    "Offline"     // 2 = DRIVER_OFFLINE
+};
+
 Driver::Driver()
     : id(-1), name(""), currentLocationId(-1), zoneId(-1),
       status(DRIVER_OFFLINE), totalTripsCompleted(0), totalDistanceCovered(0) {}
@@ -26,7 +33,7 @@ int Driver::getZoneId() const {
     return zoneId;
 }
 
-DriverStatus Driver::getStatus() const {
+int Driver::getStatus() const {
     return status;
 }
 
@@ -46,7 +53,7 @@ void Driver::setZoneId(int zone) {
     zoneId = zone;
 }
 
-void Driver::setStatus(DriverStatus newStatus) {
+void Driver::setStatus(int newStatus) {
     status = newStatus;
 }
 
@@ -69,12 +76,11 @@ void Driver::setTotalDistanceCovered(int distance) {
 }
 
 string Driver::getStatusString() const {
-    switch (status) {
-        case DRIVER_AVAILABLE: return "Available";
-        case DRIVER_BUSY: return "Busy";
-        case DRIVER_OFFLINE: return "Offline";
-        default: return "Unknown";
+    // Use lookup array instead of switch
+    if (status >= 0 && status < DRIVER_STATUS_COUNT) {
+        return DRIVER_STATUS_NAMES[status];
     }
+    return "Unknown";
 }
 
 void Driver::display() const {

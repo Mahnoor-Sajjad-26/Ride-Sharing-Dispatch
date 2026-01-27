@@ -4,11 +4,14 @@
 #include <string>
 using namespace std;
 
-enum DriverStatus {
-    DRIVER_AVAILABLE,
-    DRIVER_BUSY,
-    DRIVER_OFFLINE
-};
+// Driver Status Constants (instead of enum)
+const int DRIVER_AVAILABLE = 0;
+const int DRIVER_BUSY = 1;
+const int DRIVER_OFFLINE = 2;
+const int DRIVER_STATUS_COUNT = 3;
+
+// Lookup array for status names (declared in Driver.cpp)
+extern const string DRIVER_STATUS_NAMES[];
 
 class Driver {
 private:
@@ -16,7 +19,7 @@ private:
     string name;
     int currentLocationId;
     int zoneId;
-    DriverStatus status;
+    int status;  // Using int instead of enum
     int totalTripsCompleted;
     int totalDistanceCovered;
 
@@ -29,14 +32,14 @@ public:
     string getName() const;
     int getCurrentLocationId() const;
     int getZoneId() const;
-    DriverStatus getStatus() const;
+    int getStatus() const;  // Returns int instead of enum
     int getTotalTripsCompleted() const;
     int getTotalDistanceCovered() const;
 
     // Setters
     void setCurrentLocationId(int locationId);
     void setZoneId(int zone);
-    void setStatus(DriverStatus newStatus);
+    void setStatus(int newStatus);  // Takes int instead of enum
 
     // Operations
     void completeTrip(int distance);
