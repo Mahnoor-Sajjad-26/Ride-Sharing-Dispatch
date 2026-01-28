@@ -647,6 +647,7 @@
         // Initialize the dashboard
         async function init() {
             await refreshData();
+            populateSelects(); // Populate dropdowns once on initial load
             setInterval(refreshData, 3000); // Auto-refresh every 3 seconds
         }
 
@@ -658,7 +659,7 @@
                     updateConnectionStatus(true);
                     renderCityMap();
                     updateDashboard();
-                    populateSelects();
+                    // Don't repopulate selects during auto-refresh to avoid resetting user selections
                 } else {
                     updateConnectionStatus(false);
                 }
