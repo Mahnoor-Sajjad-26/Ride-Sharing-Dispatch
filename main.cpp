@@ -1,5 +1,9 @@
+// Fix for Windows SDK byte conflict with C++17
+#define _HAS_STD_BYTE 0
+
 #include <iostream>
 #include "RideShareSystem.h"
+#include "WebServer.h"
 using namespace std;
 
 // Function prototypes
@@ -34,6 +38,7 @@ void displayMenu() {
     cout << "9. View Analytics" << endl;
     cout << "10. View Operation History" << endl;
     cout << "11. Run All Tests" << endl;
+    cout << "12. Start Web Server & GUI Dashboard" << endl;
     cout << "0. Exit" << endl;
     cout << "----------------------------------------" << endl;
     cout << "Enter choice: ";
@@ -68,7 +73,7 @@ void setupSampleCity(RideShareSystem& system) {
     system.addRoad(3, 4, 10); // D-E: 10 (connects zones)
 
     // Add drivers
-    system.addDriver("Alice", 0, 1);   // Driver 0: at A, Zone 1
+    system.addDriver("Mahnoor", 0, 1);   // Driver 0: at A, Zone 1
     system.addDriver("Bob", 3, 1);     // Driver 1: at D, Zone 1
     system.addDriver("Charlie", 6, 2); // Driver 2: at G, Zone 2
 
@@ -407,6 +412,22 @@ int main() {
                 // Reset system after tests
                 system = RideShareSystem();
                 setupSampleCity(system);
+                break;
+
+            case 12: // Start Web Server
+                {
+                    cout << "\n========================================" << endl;
+                    cout << "  LAUNCHING WEB SERVER" << endl;
+                    cout << "========================================" << endl;
+                    cout << "The web server will start and the system will be accessible via browser." << endl;
+                    cout << "Once started, open your browser and go to:" << endl;
+                    cout << "  http://localhost:8080/dashboard.html" << endl;
+                    cout << "\nPress Ctrl+C to stop the server and return to menu." << endl;
+                    cout << "========================================\n" << endl;
+
+                    WebServer webServer(&system, 8080);
+                    webServer.start();
+                }
                 break;
 
             case 0:
